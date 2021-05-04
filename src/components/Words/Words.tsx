@@ -17,8 +17,15 @@ export default function Words () {
         .then((responseData) => {
             setWord(responseData);
             setisChecked(false)
+            var msg = new SpeechSynthesisUtterance(responseData);
+            window.speechSynthesis.speak(msg);
         })
         .catch((error) => {});
+    }
+
+    const replayWord = () => {
+        var msg = new SpeechSynthesisUtterance(word[0]);
+        window.speechSynthesis.speak(msg)
     }
 
     const checkAnswer = () => {
@@ -63,6 +70,7 @@ export default function Words () {
         <section>
         <p>{word[0]}</p>
         <button onClick={getNewWord}>Display Word</button>
+        <button onClick={replayWord}>Replay Word</button>
         <div>
         <input type="text" value={answer} onChange={(e) => setAnswer(e.target.value)}></input>
             <button onClick={checkAnswer}>Submit</button>
