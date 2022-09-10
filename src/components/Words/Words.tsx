@@ -5,10 +5,11 @@ import React, {useState, useEffect} from 'react'
 export default function Words () {
     const [word, setWord] = useState([])
     const [answer, setAnswer] = useState('')
+    const [displayed, isDisplayed] = useState(false)
     const [isCorrect, setisCorrect] = useState(Boolean)
     const [isChecked, setisChecked] = useState(false)
 
-    const getNewWord = () => {
+    useEffect(() => {
         fetch(`https://random-word-api.herokuapp.com/word?number=1`, {
             method: "GET",
         })
@@ -21,24 +22,15 @@ export default function Words () {
             window.speechSynthesis.speak(msg);
         })
         .catch((error) => {});
+    }, [])
+
+    const displayWord = () => {
+        isDisplayed(true)
     }
 
     const replayWord = () => {
         var msg = new SpeechSynthesisUtterance(word[0]);
         window.speechSynthesis.speak(msg)
-    }
-
-    const checkAnswer = () => {
-        console.log(answer)
-        console.log(word)
-        console.log(word[0])
-        // if (answer === word[0]) {
-        //     setisCorrect(true)
-        // } 
-        // console.log(isCorrect)
-        setisChecked(true)
-        console.log(isCorrect)
-        
     }
 
     const displayCorrect = () => {
@@ -56,6 +48,15 @@ export default function Words () {
         )
     }
 
+    const handleSubmit = (e:any) => {
+        e.preventDefault();
+        if(answer == word[0]) {
+            alert("correct")
+        } else {
+            alert("nice try but you are rong stupid")
+        }
+    }
+
     // const displayInCorrect = () => {
     //     alert("nice try but youre wrong")
     // }
@@ -68,13 +69,16 @@ export default function Words () {
 
     return (
         <section>
-        <p>{word[0]}</p>
-        <button onClick={getNewWord}>Display Word</button>
+        <p>{displayed && word ? word[0] : ''}</p>
+        <button onClick={displayWord}>Display Word</button>
         <button onClick={replayWord}>Replay Word</button>
         <div>
-        <input type="text" value={answer} onChange={(e) => setAnswer(e.target.value)}></input>
-            <button onClick={checkAnswer}>Submit</button>
+            <form onSubmit={handleSubmit}>
+            <input type="text" value={answer} onChange={(e) => setAnswer(e.target.value)}></input>
+            <button type='submit'>Submit</button>
             {isChecked ? displayCorrect() : ""}
+            </form>
+    
             </div>
         </section>
     )
